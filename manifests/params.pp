@@ -15,4 +15,9 @@ class couchdb::params {
     default => $couchdb_backupdir,
   }
 
+  $cert_path = $couchdb_cert_path ? {
+    ""      => "etc/certs/",
+    default => $couchdb_cert_path,
+  }
+
 }
