@@ -1,4 +1,4 @@
-class couchdb::ssl {
+class couchdb::ssl::generate_cert {
 
   package { ['openssl']:
     ensure => 'installed',
