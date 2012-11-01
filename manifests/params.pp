@@ -16,7 +16,7 @@ class couchdb::params {
   }
 
   $cert_path = $couchdb_cert_path ? {
-    ""      => "etc/certs/",
+    ""      => "/etc/couchdb",
     default => $couchdb_cert_path,
   }
 
