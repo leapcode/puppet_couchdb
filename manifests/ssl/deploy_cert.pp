@@ -1,7 +1,7 @@
 define couchdb::ssl::deploy_cert ($cert, $key) {
-
+include couchdb::params
   file { 'couchdb_cert_directory':
-    path    => "$couchdb::cert_path:",
+    path    => "$couchdb::params::cert_path",
     ensure  => 'directory',
     mode    => '0600',
     owner   => 'couchdb',
@@ -9,7 +9,7 @@ define couchdb::ssl::deploy_cert ($cert, $key) {
   }
 
   file { 'couchdb_cert"':
-    path    => "$couchdb::cert_path/server_cert.pem",
+    path    => "$couchdb::params::cert_path/server_cert.pem",
     mode    => '0644',
     owner   => 'couchdb',
     group   => 'couchdb',
@@ -17,7 +17,7 @@ define couchdb::ssl::deploy_cert ($cert, $key) {
   }
 
   file { 'couchdb_key':
-    path    => "$couchdb::cert_path/server_key.pem",
+    path    => "$couchdb::params::cert_path/server_key.pem",
     mode    => '0600',
     owner   => 'couchdb',
     group   => 'couchdb',
