@@ -1,4 +1,4 @@
-define couchdb::add_user ($host, $roles, $pw ) {
+define couchdb::add_user ($host='127.0.0.1:5984', $roles, $pw ) {
   couchdb::query { "create_user_$name":
     cmd  => 'PUT',
     host => $host,

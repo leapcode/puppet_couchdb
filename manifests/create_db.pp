@@ -1,4 +1,4 @@
-define couchdb::create_db ($host, 
+define couchdb::create_db ($host='127.0.0.1:5984', 
                                 $admins="{\"names\": [], \"roles\": [] }", 
                                 $readers="{\"names\": [], \"roles\": [] }") {
 
