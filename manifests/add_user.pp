@@ -5,5 +5,12 @@ define couchdb::add_user ($host='127.0.0.1:5984', $roles, $pw ) {
     url  => "_users/org.couchdb.user:$name",
     data => "{ \"_id\": \"org.couchdb.user:$name\", \"type\": \"user\", \"name\": \"$name\", \"roles\": $roles, \"password\": \"$pw\"}",
   }
+  #
+  # couchdb::update { "update_user_$name":
+  #   db => "_users",
+  #   id => "org.couchdb.user:$name",
+  #   data => "{\"type\": \"user\", \"name\": \"$name\", \"roles\": $roles, \"password\": \"$pw\"}",
+  # }
+  #
 }
 

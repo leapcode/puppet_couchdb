@@ -1,0 +1,116 @@
+#!/usr/bin/ruby
+
+#
+# This script will update the values of a particular couchdb document. The benefit of this little script over
+# using a simple curl command for updating a document is this:
+#
+#   * exit non-zero status if document was not updated.
+#   * updates existing documents easily, taking care of the _rev id for you.
+#   * if document doesn't exist, it is created
+#
+# REQUIREMENTS
+#
+#   gem 'couchrest'
+#
+# USAGE
+#
+#   couch-doc-update --db <db> --id <doc_id> --data <json>
+#
+# EXAMPLE
+#
+#   create a new user:
+#     couch-doc-update --db _users --id org.couchdb.user:ca_daemon --data '{"type": "user", "name": "ca_daemon", "roles": ["certs"], "password": "sshhhh"}'
+#
+#   update a user:
+#     couch-doc-update --db _users --id org.couchdb.user:ca_daemon --data '{"password":"sssshhh"}'
+#
+
+begin; require 'rubygems'; rescue LoadError; end # optionally load rubygems
+require 'couchrest'
+require 'json'
+
+def main
+  #
+  # parse options
+  #
+  @db_name    = nil
+  @doc_id     = nil
+  @new_data   = nil
+  loop do
+    case ARGV[0]
+      when '--db'   then ARGV.shift; @db_name  = ARGV.shift
+      when '--id'   then ARGV.shift; @doc_id   = ARGV.shift
+      when '--data' then ARGV.shift; @new_data = ARGV.shift
+      when /^-/     then usage("Unknown option: #{ARGV[0].inspect}")
+      else break
+    end
+  end
+  usage("Missing required option") unless @db_name && @doc_id && @new_data
+  @new_data = JSON.parse(@new_data)
+
+  #
+  # update document
+  #
+  begin
+    @db  = CouchRest.database(connection_string(@db_name))
+    @doc = get_document(@db, @doc_id)
+    result = if @doc
+      update_document(@db, @doc, @new_data)
+    else
+      create_document(@db, @doc_id, @new_data)
+    end
+    exit 0 if result['ok']
+    raise StandardError.new(result.inspect)
+  rescue StandardError => exc
+    puts "ERROR: " + exc.to_s
+    exit 1
+  end
+end
+
+def get_document(db, doc_id)
+  begin
+    db.get(doc_id)
+  rescue RestClient::ResourceNotFound
+    nil
+  end
+end
+
+def update_document(db, doc, data)
+  data.each do |key, value|
+    doc[key] = value
+  end
+  db.save_doc(doc)
+end
+
+def create_document(db, doc_id, data)
+  data["_id"] = doc_id
+  db.save_doc(data)
+end
+
+def connection_string(database)
+  protocol  = "http"
+  hostname  = "127.0.0.1"
+  port      = "5984"
+  username  = "admin"
+  password  = ""
+
+  netrc = File.read('/etc/couchdb/couchdb.netrc')
+  netrc.scan(/\w+ [\w\.]+/).each do |key_value|
+    key, value = key_value.split ' '
+    case key
+      when "machine"  then hostname = value
+      when "login"    then username = value
+      when "password" then password = value
+    end
+  end
+
+  "%s://%s:%s@%s:%s/%s" % [protocol, username, password, hostname, port, database]
+end
+
+def usage(s)
+  $stderr.puts(s)
+  $stderr.puts("Usage: #{File.basename($0)} --db <db> --id <doc_id> --data <json>")
+  exit(2)
+end
+
+main()
