@@ -11,4 +11,10 @@ class couchdb::base {
     require   => Package['couchdb'],
   }
 
+  # required for couch-doc-update script
+  package { 'couchrest':
+    ensure   => installed,
+    provider => 'gem'
+  }
+
 }
