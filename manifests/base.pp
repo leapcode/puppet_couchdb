@@ -17,4 +17,12 @@ class couchdb::base {
     provider => 'gem'
   }
 
+  file { '/usr/local/bin/couch-doc-update':
+    source  => 'puppet:///modules/couchdb/couch-doc-update',
+    mode    => '0755',
+    owner   => 'root',
+    group   => 'root',
+    require => Package['couchrest'],
+  }
+
 }
