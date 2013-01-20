@@ -17,6 +17,7 @@ class couchdb::base {
     provider => 'gem'
   }
 
+  File['/usr/local/bin/couch-doc-update'] ->  Couchdb::Update <| |>
   file { '/usr/local/bin/couch-doc-update':
     source  => 'puppet:///modules/couchdb/couch-doc-update',
     mode    => '0755',
