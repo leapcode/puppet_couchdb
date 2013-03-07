@@ -8,4 +8,8 @@ class couchdb {
     }
     RedHat: { include couchdb::redhat }
   }
+
+  package { 'curl':
+    ensure => installed,
+  }
 }
