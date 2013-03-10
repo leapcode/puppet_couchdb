@@ -14,7 +14,7 @@
 #
 # USAGE
 #
-#   couch-doc-update --db <db> --id <doc_id> --data <json>
+#   couch-doc-update --port <port> --db <db> --id <doc_id> --data <json>
 #
 # EXAMPLE
 #
@@ -23,6 +23,8 @@
 #
 #   update a user:
 #     couch-doc-update --db _users --id org.couchdb.user:ca_daemon --data '{"password":"sssshhh"}'
+#
+# To update the _users DB on bigcouch, you must connect to port 5986 instead of the default couchdb port 5984
 #
 
 begin; require 'rubygems'; rescue LoadError; end # optionally load rubygems
@@ -33,11 +35,13 @@ def main
   #
   # parse options
   #
+  @port       = "5984" 
   @db_name    = nil
   @doc_id     = nil
   @new_data   = nil
   loop do
     case ARGV[0]
+      when '--port' then ARGV.shift; @port     = ARGV.shift
       when '--db'   then ARGV.shift; @db_name  = ARGV.shift
       when '--id'   then ARGV.shift; @doc_id   = ARGV.shift
       when '--data' then ARGV.shift; @new_data = ARGV.shift
@@ -47,12 +51,12 @@ def main
   end
   usage("Missing required option") unless @db_name && @doc_id && @new_data
   @new_data = JSON.parse(@new_data)
-
+	
   #
   # update document
   #
   begin
-    @db  = CouchRest.database(connection_string(@db_name))
+    @db  = CouchRest.database(connection_string(@db_name, @port))
     @doc = get_document(@db, @doc_id)
     result = if @doc
       update_document(@db, @doc, @new_data)
@@ -87,10 +91,10 @@ def create_document(db, doc_id, data)
   db.save_doc(data)
 end
 
-def connection_string(database)
+def connection_string(database, port)
   protocol  = "http"
   hostname  = "127.0.0.1"
-  port      = "5984"
+  #port      = "5984"
   username  = "admin"
   password  = ""
 
@@ -109,7 +113,7 @@ end
 
 def usage(s)
   $stderr.puts(s)
-  $stderr.puts("Usage: #{File.basename($0)} --db <db> --id <doc_id> --data <json>")
+  $stderr.puts("Usage: #{File.basename($0)} --port <port> --db <db> --id <doc_id> --data <json>")
   exit(2)
 end
 
