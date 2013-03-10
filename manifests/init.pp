@@ -1,4 +1,7 @@
-class couchdb {
+class couchdb (
+  $admin_pw,
+  $bigcouch = false,
+  $bigcouch_cookie = '' ) {
   case $::operatingsystem {
     Debian: {
       case $::lsbdistcodename {
@@ -8,4 +11,5 @@ class couchdb {
     }
     RedHat: { include couchdb::redhat }
   }
+
 }
