@@ -1,16 +1,5 @@
 class couchdb::bigcouch inherits couchdb::base {
 
-  case $::operatingsystem {
-    Debian: {
-      case $::lsbdistcodename {
-        /squeeze|wheezy/: { #include couchdb::bigcouch::debian 
-        }
-        default:          { fail "bigcouch not available for ${::operatingsystem}/${::lsbdistcodename}" }
-      }
-    }
-    default:          { fail "bigcouch not available for ${::operatingsystem}/${::lsbdistcodename}" }
-  }
-
   apt::sources_list {'bigcouch-cloudant.list':
     content => "deb http://packages.cloudant.com/debian $::lsbdistcodename main"
   }

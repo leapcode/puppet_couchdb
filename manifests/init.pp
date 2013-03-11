@@ -5,7 +5,12 @@ class couchdb (
   case $::operatingsystem {
     Debian: {
       case $::lsbdistcodename {
-        /lenny|squeeze|wheezy/: { include couchdb::debian }
+        /lenny|squeeze|wheezy/: {
+          include couchdb::debian
+          if $bigcouch == true {
+            include couchdb::bigcouch::debian
+          }
+        }
         default:         { fail "couchdb not available for ${::operatingsystem}/${::lsbdistcodename}" }
       }
     }
