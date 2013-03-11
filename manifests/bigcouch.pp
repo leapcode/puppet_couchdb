@@ -14,14 +14,15 @@ class couchdb::bigcouch inherits couchdb::base {
   }
 
   file {'/etc/couchdb':
-    ensure => link,
-    target => '/opt/bigcouch/etc'
+    ensure  => link,
+    target  => '/opt/bigcouch/etc',
+    require => Package['couchdb']
   }
 
   Package ['couchdb'] {
     name    => 'bigcouch',
     require => [ Apt::Sources_list ['bigcouch-cloudant.list'],
-      Apt::Apt_conf ['allow_unauthenticated'], File['/etc/couchdb'],
+      Apt::Apt_conf ['allow_unauthenticated'], 
       Exec[refresh_apt] ]
   }
 
