@@ -22,8 +22,7 @@ class couchdb::bigcouch inherits couchdb::base {
   Package ['couchdb'] {
     name    => 'bigcouch',
     require => [ Apt::Sources_list ['bigcouch-cloudant.list'],
-      Apt::Apt_conf ['allow_unauthenticated'], 
-      Exec[refresh_apt] ]
+      Apt::Apt_conf ['allow_unauthenticated'], Exec[refresh_apt] ]
   }
 
   file { '/opt/bigcouch/etc/vm.args':
@@ -35,7 +34,6 @@ class couchdb::bigcouch inherits couchdb::base {
   }
 
   Service ['couchdb'] {
-    provider => 'runit',
     name     => 'bigcouch'
   }
 
