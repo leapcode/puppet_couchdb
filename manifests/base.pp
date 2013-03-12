@@ -16,10 +16,18 @@ class couchdb::base {
     ensure    => running,
     hasstatus => true,
     enable    => true,
-    require   => Package['couchdb'],
+    require   => Package['couchdb']
+  }
+
+  # todo: make host/port configurable
+  exec {'wait_for_couchdb':
+    command => 'wget --retry-connrefused --tries 10 --quiet "http://127.0.0.1:5984" -O /dev/null',
+    require => Service['couchdb']
   }
 
   # required for couch-doc-update script
+
+
   package { 'couchrest':
     ensure   => installed,
     provider => 'gem'
