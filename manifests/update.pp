@@ -1,3 +1,3 @@
-define couchdb::update ($db, $id, $data) {
-  exec { "couch-doc-update --db $db --id $id --data \'$data\'": }
+define couchdb::update ($db, $id, $data, $port='5984') {
+  exec { "couch-doc-update --port $port --db $db --id $id --data \'$data\'": }
 }
