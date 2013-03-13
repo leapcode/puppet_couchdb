@@ -9,7 +9,8 @@ class couchdb::base {
 
 
   package {'couchdb':
-    ensure => present,
+    ensure  => present,
+    require => Exec['refresh_apt']
   }
 
   service {'couchdb':
