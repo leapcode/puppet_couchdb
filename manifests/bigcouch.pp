@@ -1,28 +1,20 @@
 class couchdb::bigcouch inherits couchdb::base {
 
-  apt::sources_list {'bigcouch-cloudant.list':
-    content => "deb http://packages.cloudant.com/debian $::lsbdistcodename main"
-  }
-
-  # currently, there's no other way with puppet to install unauthenticated
-  # pacakges: http://projects.puppetlabs.com/issues/556
-  # so we need to globally allow apt to install unauthenticated
-  # packages.
-
-  apt::apt_conf { 'allow_unauthenticated':
-    content => 'APT::Get::AllowUnauthenticated yes;',
-  }
-
   file {'/etc/couchdb':
     ensure  => link,
     target  => '/opt/bigcouch/etc',
     require => Package['couchdb']
   }
 
+  # there's no bigcouch in the official debian repo, you need
+  # to setup a repository for that. You can use class
+  # couchdb::bigcouch::package::cloudant for unauthenticated 0.4.0 packages,
+  # or site_apt::leap_repo from the leap_platfrom repository
+  # for signed 0.4.2 packages
+
   Package ['couchdb'] {
     name    => 'bigcouch',
-    require => [ Apt::Sources_list ['bigcouch-cloudant.list'],
-      Apt::Apt_conf ['allow_unauthenticated'], Exec[refresh_apt] ]
+    require => Exec[refresh_apt]
   }
 
   file { '/opt/bigcouch/etc/vm.args':
