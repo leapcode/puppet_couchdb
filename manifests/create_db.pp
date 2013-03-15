@@ -1,6 +1,6 @@
 define couchdb::create_db ( $host='127.0.0.1:5984',
-                            $admins='{\'names\': [], \'roles\': [] }',
-                            $readers='{\'names\': [], \'roles\': [] }') {
+                            $admins='{\"names\": [], \"roles\": [] }',
+                            $readers='{\"names\": [], \"roles\": [] }') {
 
   Couchdb::Query["create_db_$name"] -> Couchdb::Query["db_security_${name}"]
 
