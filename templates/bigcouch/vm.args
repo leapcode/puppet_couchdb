@@ -25,3 +25,8 @@
 # otherwise /etc/couchdb/local.d/admin.ini wouldn't be read mysteriously
 -couch_ini /etc/couchdb/default.ini /etc/couchdb/local.ini /etc/couchdb/local.d/admin.ini /etc/couchdb/default.ini /etc/couchdb/local.ini /etc/couchdb/local.d/admin.ini
 #
+
+# make firewalling easier, see
+# http://stackoverflow.com/questions/8459949/bigcouch-cluster-connection-issue#comment10467603_8463814
+
+-kernel inet_dist_listen_min 9001
