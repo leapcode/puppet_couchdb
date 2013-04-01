@@ -19,7 +19,6 @@ class couchdb::bigcouch::package::cloudant {
       content => 'deb http://http.debian.net/debian squeeze main
 deb http://security.debian.org/ squeeze/updates main
 ',
-      before  => Exec[refresh_apt]
     }
   }
 
