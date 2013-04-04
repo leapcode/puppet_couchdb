@@ -4,10 +4,10 @@ class couchdb::backup {
 
   # used in ERB templates
   $bind_address = $couchdb::params::bind_address
-  $port = $couchdb::params::port
-  $backupdir = $couchdb::params::backupdir
+  $port         = $couchdb::params::port
+  $backupdir    = $couchdb::params::backupdir
 
-  file {$couchdb::params::backupdir:
+  file { $couchdb::params::backupdir:
     ensure  => directory,
     mode    => '0755',
     require => Package['couchdb'],
@@ -29,7 +29,6 @@ class couchdb::backup {
     require => File['/usr/local/sbin/couchdb-backup.py'],
   }
 
-
   case $::operatingsystem {
     /Debian|Ubunu/: {
       # note: python-couchdb >= 0.8 required, which is found in debian wheezy.
@@ -43,6 +42,9 @@ class couchdb::backup {
         command => 'easy_install http://pypi.python.org/packages/2.6/C/CouchDB/CouchDB-0.8-py2.6.egg',
         creates => '/usr/lib/python2.6/site-packages/CouchDB-0.8-py2.6.egg',
       }
+    }
+    default: {
+      err('This module has not been written to support your operating system')
     }
   }
 

@@ -1,7 +1,10 @@
-class couchdb (
-  $admin_pw,
-  $bigcouch = false,
-  $bigcouch_cookie = '' ) {
+class couchdb ( $admin_pw = '', $bigcouch = false,  $bigcouch_cookie = '' )
+{
+
+  if $admin_pw = '' {
+    err('Must set admin password by passing a value to the $admin_pw parameter')
+  }
+
   case $::operatingsystem {
     Debian: {
       case $::lsbdistcodename {

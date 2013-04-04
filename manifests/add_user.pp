@@ -6,10 +6,10 @@ define couchdb::add_user ( $roles, $pw ) {
     $port = 5984
 }
 
-  couchdb::update { "update_user_$name":
+  couchdb::update { "update_user_${name}":
     port => $port,
     db   => '_users',
-    id   => "org.couchdb.user:$name",
-    data => "{\"type\": \"user\", \"name\": \"$name\", \"roles\": $roles, \"password\": \"$pw\"}",
+    id   => "org.couchdb.user:${name}",
+    data => "{\"type\": \"user\", \"name\": \"${name}\", \"roles\": ${roles}, \"password\": \"${pw}\"}",
   }
 }

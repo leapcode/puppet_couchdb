@@ -7,13 +7,12 @@ class couchdb::base {
     $couchdb_user = 'couchdb'
   }
 
-
-  package {'couchdb':
+  package { 'couchdb':
     ensure  => present,
     require => Exec['refresh_apt']
   }
 
-  service {'couchdb':
+  service { 'couchdb':
     ensure    => running,
     hasstatus => true,
     enable    => true,
@@ -21,14 +20,12 @@ class couchdb::base {
   }
 
   # todo: make host/port configurable
-  exec {'wait_for_couchdb':
+  exec { 'wait_for_couchdb':
     command => 'wget --retry-connrefused --tries 10 --quiet "http://127.0.0.1:5984" -O /dev/null',
     require => Service['couchdb']
   }
 
   # required for couch-doc-update script
-
-
   package { 'couchrest':
     ensure   => installed,
     provider => 'gem'
@@ -64,7 +61,7 @@ class couchdb::base {
   $sha1          = $sha1_and_salt[0]
   $salt          = $sha1_and_salt[1]
 
-  file {'/etc/couchdb/local.d/admin.ini':
+  file { '/etc/couchdb/local.d/admin.ini':
     content => "[admins]
 admin = -hashed-${sha1},${salt}
 ",
@@ -75,14 +72,16 @@ admin = -hashed-${sha1},${salt}
     require => File ['/etc/couchdb/local.d'];
   }
 
+  case $::couchdb::bigcouch {
+    true: { $restart_command = '/etc/init.d/bigcouch restart; sleep 6' }
+    default: { $restart_command = '/etc/init.d/couchdb restart; sleep 6' }
+  }
+
   exec { 'couchdb_restart':
-    command     => $::couchdb::bigcouch ? {
-      true    => '/etc/init.d/bigcouch restart; sleep 6',
-      default => '/etc/init.d/couchdb  restart; sleep 6',
-    },
+    command     => $restart_command,
     path        => ['/bin', '/usr/bin',],
     subscribe   => File['/etc/couchdb/local.d/admin.ini',
-      '/etc/couchdb/local.ini'],
+                        '/etc/couchdb/local.ini'],
     refreshonly => true
   }
 

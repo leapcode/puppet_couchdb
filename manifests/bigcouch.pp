@@ -1,6 +1,6 @@
 class couchdb::bigcouch inherits couchdb::base {
 
-  file {'/etc/couchdb':
+  file { '/etc/couchdb':
     ensure  => link,
     target  => '/opt/bigcouch/etc',
     require => Package['couchdb']

@@ -1,4 +1,5 @@
 class couchdb::deploy_config {
+
   file { '/etc/couchdb/local.ini':
     source  => [ "puppet:///modules/site_couchdb/${::fqdn}/local.ini",
                 'puppet:///modules/site_couchdb/local.ini',

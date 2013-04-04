@@ -1,4 +1,5 @@
 define couchdb::query::setup ($user, $pw, $host='127.0.0.1') {
+
   file { '/etc/couchdb/couchdb.netrc':
     content => "machine ${host} login ${user} password ${pw}",
     mode    => '0600',
