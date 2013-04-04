@@ -29,4 +29,4 @@
 # make firewalling easier, see
 # http://stackoverflow.com/questions/8459949/bigcouch-cluster-connection-issue#comment10467603_8463814
 
--kernel inet_dist_listen_min 9001
+-kernel inet_dist_listen_min <%= scope.lookupvar('couchdb::ednp_port') %>
