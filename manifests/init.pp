@@ -1,4 +1,4 @@
-class couchdb ( $admin_pw = '', $bigcouch = false,  $bigcouch_cookie = '', $ednp_port = '9001' )
+class couchdb ( $admin_pw = '', $admin_salt = '', $bigcouch = false,  $bigcouch_cookie = '', $ednp_port = '9001' )
 {
 
   if $admin_pw == '' {

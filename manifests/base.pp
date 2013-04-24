@@ -56,10 +56,19 @@ class couchdb::base {
       require => Package['couchdb'];
   }
 
-  # salt and encrypt admin pw
-  $sha1_and_salt = str2sha1_and_salt($::couchdb::admin_pw)
-  $sha1          = $sha1_and_salt[0]
-  $salt          = $sha1_and_salt[1]
+  if $::couchdb::admin_salt == '' {
+    # unhashed, plaintext pw, no salt. For couchdb >= 1.2
+    $sha1_and_salt = str2sha1_and_salt($::couchdb::admin_pw)
+    $sha1          = $sha1_and_salt[0]
+    $salt          = $sha1_and_salt[1]
+  } else {
+    # prehashed pw with salt, for couchdb < 1.2
+    # salt and encrypt pw
+    # str_and_salt2sha1 is a function from leap's stdlib module
+    $salt        = $::couchdb::admin_salt
+    $pw_and_salt = [ $::couchdb::admin_pw, $salt ]
+    $sha1        = str_and_salt2sha1($pw_and_salt)
+  }
 
   file { '/etc/couchdb/local.d/admin.ini':
     content => "[admins]
