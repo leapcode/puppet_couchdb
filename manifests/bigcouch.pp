@@ -1,9 +1,14 @@
 class couchdb::bigcouch inherits couchdb::base {
 
-  file { '/etc/couchdb':
-    ensure  => link,
-    target  => '/opt/bigcouch/etc',
-    require => Package['couchdb']
+  file {
+    '/opt/bigcouch':
+      ensure => directory,
+      mode   => '0755';
+
+    '/opt/bigcouch/etc':
+      ensure => link,
+      target => '/etc/couchdb',
+      before => Package['couchdb'];
   }
 
   # there's no bigcouch in the official debian repo, you need
