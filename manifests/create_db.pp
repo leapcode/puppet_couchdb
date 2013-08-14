@@ -9,6 +9,7 @@ define couchdb::create_db ( $host='127.0.0.1:5984',
     cmd  => 'PUT',
     host => $host,
     url  => $name,
+    unless => "/usr/bin/curl --netrc-file /etc/couchdb/couchdb.netrc ${host}/${name}"
   }
 
   couchdb::query { "db_security_${name}":
