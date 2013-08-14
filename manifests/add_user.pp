@@ -23,10 +23,12 @@ define couchdb::add_user ( $roles, $pw, $salt = '' ) {
     $data = "{\"type\": \"user\", \"name\": \"${name}\", \"roles\": ${roles}, \"password_sha\": \"${sha}\", \"salt\": \"${salt}\"}"
   }
 
+  # update the user with the given password unless they already work
   couchdb::update { "update_user_${name}":
     port => $port,
     db   => '_users',
     id   => "org.couchdb.user:${name}",
-    data => $data
+    data => $data,
+    unless => "curl -f ${name}:${pw}@127.0.0.1:${port}/"
   }
 }
