@@ -29,6 +29,6 @@ define couchdb::add_user ( $roles, $pw, $salt = '' ) {
     db   => '_users',
     id   => "org.couchdb.user:${name}",
     data => $data,
-    unless => "curl -f ${name}:${pw}@127.0.0.1:${port}/"
+    unless => "/usr/bin/curl -f ${name}:${pw}@127.0.0.1:${port}/"
   }
 }
