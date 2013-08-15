@@ -14,7 +14,7 @@
 #
 # USAGE
 #
-#   couch-doc-update --port <port> --db <db> --id <doc_id> --data <json>
+#   couch-doc-update --host <host> --db <db> --id <doc_id> --data <json>
 #
 # EXAMPLE
 #
@@ -35,13 +35,13 @@ def main
   #
   # parse options
   #
-  @port       = "5984" 
+  @host       = "127.0.0.1:5984"
   @db_name    = nil
   @doc_id     = nil
   @new_data   = nil
   loop do
     case ARGV[0]
-      when '--port' then ARGV.shift; @port     = ARGV.shift
+      when '--host' then ARGV.shift; @host     = ARGV.shift
       when '--db'   then ARGV.shift; @db_name  = ARGV.shift
       when '--id'   then ARGV.shift; @doc_id   = ARGV.shift
       when '--data' then ARGV.shift; @new_data = ARGV.shift
@@ -56,7 +56,7 @@ def main
   # update document
   #
   begin
-    @db  = CouchRest.database(connection_string(@db_name, @port))
+    @db  = CouchRest.database(connection_string(@db_name, @host))
     @doc = get_document(@db, @doc_id)
     result = if @doc
       update_document(@db, @doc, @new_data)
@@ -91,10 +91,10 @@ def create_document(db, doc_id, data)
   db.save_doc(data)
 end
 
-def connection_string(database, port)
+def connection_string(database, host)
   protocol  = "http"
-  hostname  = "127.0.0.1"
-  #port      = "5984"
+  #hostname  = "127.0.0.1"
+  port      = "5984"
   username  = "admin"
   password  = ""
 
@@ -102,18 +102,18 @@ def connection_string(database, port)
   netrc.scan(/\w+ [\w\.]+/).each do |key_value|
     key, value = key_value.split ' '
     case key
-      when "machine"  then hostname = value
+      when "machine"  then host = value + ':' + port
       when "login"    then username = value
       when "password" then password = value
     end
   end
 
-  "%s://%s:%s@%s:%s/%s" % [protocol, username, password, hostname, port, database]
+  "%s://%s:%s@%s/%s" % [protocol, username, password, host, database]
 end
 
 def usage(s)
   $stderr.puts(s)
-  $stderr.puts("Usage: #{File.basename($0)} --port <port> --db <db> --id <doc_id> --data <json>")
+  $stderr.puts("Usage: #{File.basename($0)} --host <host> --db <db> --id <doc_id> --data <json>")
   exit(2)
 end
 

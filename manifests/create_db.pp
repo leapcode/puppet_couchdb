@@ -3,19 +3,19 @@ define couchdb::create_db ( $host='127.0.0.1:5984',
                             $readers="{\"names\": [], \"roles\": [] }" )
 {
 
-  Couchdb::Query["create_db_${name}"] -> Couchdb::Query["db_security_${name}"]
+  Couchdb::Query["create_db_${name}"] -> Couchdb::Document["${name}_security"]
 
   couchdb::query { "create_db_${name}":
     cmd  => 'PUT',
     host => $host,
-    url  => $name,
+    path  => $name,
     unless => "/usr/bin/curl --netrc-file /etc/couchdb/couchdb.netrc ${host}/${name}"
   }
 
-  couchdb::query { "db_security_${name}":
-    cmd  => 'PUT',
+  couchdb::document { "${name}_security":
+    db   => $name,
+    id   => '_security',
     host => $host,
-    url  => "${name}/_security",
     data => "{ \"admins\": ${admins}, \"readers\": ${readers} }"
   }
 }
