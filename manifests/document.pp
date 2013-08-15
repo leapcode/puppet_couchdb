@@ -5,7 +5,7 @@
 #   ensure => {absent,present,*content*}
 # }
 #
-define couchdb::document ( $host='127.0.0.1:5984', $db, $id, $data, $ensure='content') {
+define couchdb::document ( $host='127.0.0.1:5984', $db, $id, $data='{}', $ensure='content') {
 
   $url = "${host}/${db}/${id}"
 
