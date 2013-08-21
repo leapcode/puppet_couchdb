@@ -5,6 +5,11 @@ class couchdb::bigcouch inherits couchdb::base {
       ensure => directory,
       mode   => '0755';
 
+    '/etc/couchdb':
+      ensure => directory,
+      mode   => '0755',
+      before => Package['couchdb'];
+
     '/opt/bigcouch/etc':
       ensure => link,
       target => '/etc/couchdb',
