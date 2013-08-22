@@ -35,6 +35,14 @@ class couchdb::bigcouch inherits couchdb::base {
     require => Package['couchdb']
   }
 
+  file { '/opt/bigcouch/etc/default.ini':
+    content => template('couchdb/bigcouch/default.ini'),
+    mode    => '0640',
+    owner   => 'bigcouch',
+    group   => 'bigcouch',
+    require => Package['couchdb']
+  }
+
   Service ['couchdb'] {
     name     => 'bigcouch'
   }
