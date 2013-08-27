@@ -32,7 +32,8 @@ class couchdb::bigcouch inherits couchdb::base {
     mode    => '0640',
     owner   => 'bigcouch',
     group   => 'bigcouch',
-    require => Package['couchdb']
+    require => Package['couchdb'],
+    notify  => Service[couchdb]
   }
 
   file { '/opt/bigcouch/etc/default.ini':
@@ -40,7 +41,8 @@ class couchdb::bigcouch inherits couchdb::base {
     mode    => '0640',
     owner   => 'bigcouch',
     group   => 'bigcouch',
-    require => Package['couchdb']
+    require => Package['couchdb'],
+    notify  => Service[couchdb]
   }
 
   Service ['couchdb'] {
