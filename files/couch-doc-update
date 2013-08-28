@@ -51,7 +51,7 @@ def main
   end
   usage("Missing required option") unless @db_name && @doc_id && @new_data
   @new_data = JSON.parse(@new_data)
-	
+
   #
   # update document
   #

@@ -5,7 +5,12 @@
 #   ensure => {absent,present,*content*}
 # }
 #
-define couchdb::document ( $host='127.0.0.1:5984', $db, $id, $data='{}', $ensure='content') {
+define couchdb::document(
+  $db,
+  $id,
+  $host   = '127.0.0.1:5984',
+  $data   = '{}',
+  $ensure = 'content') {
 
   $url = "${host}/${db}/${id}"
 
@@ -20,18 +25,18 @@ define couchdb::document ( $host='127.0.0.1:5984', $db, $id, $data='{}', $ensure
 
     present: {
       couchdb::query { "create_${db}_${id}":
-        cmd => 'PUT',
-        host => $host,
-        path => "${db}/${id}",
+        cmd    => 'PUT',
+        host   => $host,
+        path   => "${db}/${id}",
         unless => "/usr/bin/curl --netrc-file /etc/couchdb/couchdb.netrc ${url}"
       }
     }
 
     absent: {
       couchdb::query { "destroy_${db}_${id}":
-        cmd => 'DELETE',
-        host => $host,
-        path => "${db}/${id}",
+        cmd    => 'DELETE',
+        host   => $host,
+        path   => "${db}/${id}",
         onlyif => "/usr/bin/curl --netrc-file /etc/couchdb/couchdb.netrc ${url}"
       }
     }
