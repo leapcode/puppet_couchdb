@@ -1,0 +1,2 @@
+#!/bin/bash
+diff -w <(curl -s --netrc-file /etc/couchdb/couchdb.netrc $1 ) <(echo $2)

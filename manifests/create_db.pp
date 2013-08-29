@@ -4,7 +4,7 @@ define couchdb::create_db (
   $readers="{\"names\": [], \"roles\": [] }" )
 {
 
-  Couchdb::Query["create_db_${name}"] -> Couchdb::Query["db_security_${name}"]
+  Couchdb::Query["create_db_${name}"] -> Couchdb::Document["${name}_security"]
 
   couchdb::query { "create_db_${name}":
     cmd    => 'PUT',
@@ -13,10 +13,10 @@ define couchdb::create_db (
     unless => "/usr/bin/curl -s --netrc-file /etc/couchdb/couchdb.netrc ${host}/${name} | grep -q -v '{\"error\":\"not_found\"'"
   }
 
-  couchdb::query { "db_security_${name}":
-    cmd  => 'PUT',
+  couchdb::document { "${name}_security":
+    db   => $name,
+    id   => '_security',
     host => $host,
-    url  => "${name}/_security",
     data => "{ \"admins\": ${admins}, \"readers\": ${readers} }"
   }
 }

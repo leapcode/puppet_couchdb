@@ -1,7 +1,8 @@
 define couchdb::bigcouch::add_node {
 
-  couchdb::bigcouch::query { "add_${name}":
-    cmd  => 'PUT',
-    url  => "nodes/bigcouch@${name}"
+  couchdb::bigcouch::document { "add_${name}":
+    db   => 'nodes',
+    id   => "bigcouch@${name}",
+    ensure => 'present'
   }
 }

@@ -32,10 +32,18 @@ class couchdb::base {
   }
 
   File['/usr/local/bin/couch-doc-update'] ->  Couchdb::Update <| |>
+  File['/usr/local/bin/couch-doc-diff'] ->  Couchdb::Update <| |>
 
   file {
     '/usr/local/bin/couch-doc-update':
       source  => 'puppet:///modules/couchdb/couch-doc-update',
+      mode    => '0755',
+      owner   => 'root',
+      group   => 'root',
+      require => Package['couchrest'];
+
+    '/usr/local/bin/couch-doc-diff':
+      source  => 'puppet:///modules/couchdb/couch-doc-diff',
       mode    => '0755',
       owner   => 'root',
       group   => 'root',
