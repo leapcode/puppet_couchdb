@@ -25,7 +25,7 @@ define couchdb::add_user ( $roles, $pw, $salt = '' ) {
 
   # update the user with the given password unless they already work
   couchdb::update { "update_user_${name}":
-    port => $port,
+    host => "127.0.0.1:${port}",
     db   => '_users',
     id   => "org.couchdb.user:${name}",
     data => $data,
