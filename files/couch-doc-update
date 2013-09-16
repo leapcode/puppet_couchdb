@@ -32,42 +32,49 @@ require 'couchrest'
 require 'json'
 
 def main
+  db, id, data = process_options
+  result = set_document(db, id, data)
+  exit 0 if result['ok']
+  raise StandardError.new(result.inspect)
+rescue StandardError => exc
+  puts "ERROR: " + exc.to_s
+  exit 1
+end
+
+def process_options
   #
   # parse options
   #
-  @host       = nil
-  @db_name    = nil
-  @doc_id     = nil
-  @new_data   = nil
+  host       = nil
+  db_name    = nil
+  doc_id     = nil
+  new_data   = nil
   loop do
     case ARGV[0]
-      when '--host' then ARGV.shift; @host     = ARGV.shift
-      when '--db'   then ARGV.shift; @db_name  = ARGV.shift
-      when '--id'   then ARGV.shift; @doc_id   = ARGV.shift
-      when '--data' then ARGV.shift; @new_data = ARGV.shift
+      when '--host' then ARGV.shift; host     = ARGV.shift
+      when '--db'   then ARGV.shift; db_name  = ARGV.shift
+      when '--id'   then ARGV.shift; doc_id   = ARGV.shift
+      when '--data' then ARGV.shift; new_data = ARGV.shift
       when /^-/     then usage("Unknown option: #{ARGV[0].inspect}")
       else break
     end
   end
-  usage("Missing required option") unless @db_name && @doc_id && @new_data
-  @new_data = JSON.parse(@new_data)
+  usage("Missing required option") unless db_name && doc_id && new_data
+  new_data = JSON.parse(new_data)
+  db  = CouchRest.database(connection_string(db_name, host))
+  return db, doc_id, new_data
+end
 
   #
   # update document
   #
-  begin
-    @db  = CouchRest.database(connection_string(@db_name, @host))
-    @doc = get_document(@db, @doc_id)
-    result = if @doc
-      update_document(@db, @doc, @new_data)
-    else
-      create_document(@db, @doc_id, @new_data)
-    end
-    exit 0 if result['ok']
-    raise StandardError.new(result.inspect)
-  rescue StandardError => exc
-    puts "ERROR: " + exc.to_s
-    exit 1
+def set_document(db, id, data)
+  doc = get_document(db, id)
+  if doc
+    doc.id ||= id
+    update_document(db, doc, data)
+  else
+    create_document(db, id, data)
   end
 end
 
@@ -80,9 +87,8 @@ def get_document(db, doc_id)
 end
 
 def update_document(db, doc, data)
-  data.each do |key, value|
-    doc[key] = value
-  end
+  doc.reject! {|k,v| !k.start_with? '_'}
+  doc.merge! data
   db.save_doc(doc)
 end
 
