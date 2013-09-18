@@ -8,7 +8,7 @@ define couchdb::create_db (
     cmd    => 'PUT',
     host   => $host,
     path   => $name,
-    unless => "/usr/bin/curl -s --netrc-file /etc/couchdb/couchdb.netrc ${host}/${name} | grep -q -v '{\"error\":\"not_found\"'"
+    unless => "/usr/bin/curl -s -f --netrc-file /etc/couchdb/couchdb.netrc ${host}/${name}"
   }
 
   couchdb::query { "${name}_security":

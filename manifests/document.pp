@@ -28,7 +28,7 @@ define couchdb::document(
         cmd    => 'PUT',
         host   => $host,
         path   => "${db}/${id}",
-        unless => "/usr/bin/curl -s --netrc-file /etc/couchdb/couchdb.netrc ${url} | grep -q -v '{\"error\":'"
+        unless => "/usr/bin/curl -s -f --netrc-file /etc/couchdb/couchdb.netrc ${url}"
       }
     }
 
@@ -37,7 +37,7 @@ define couchdb::document(
         cmd    => 'DELETE',
         host   => $host,
         path   => "${db}/${id}",
-        unless => "/usr/bin/curl -s --netrc-file /etc/couchdb/couchdb.netrc ${url} | grep -q '{\"error\":'"
+        unless => "/usr/bin/curl -s -f --netrc-file /etc/couchdb/couchdb.netrc ${url}"
       }
     }
   }
