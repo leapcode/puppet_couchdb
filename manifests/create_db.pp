@@ -11,11 +11,11 @@ define couchdb::create_db (
     unless => "/usr/bin/curl -s -f --netrc-file /etc/couchdb/couchdb.netrc ${host}/${name}"
   }
 
-  couchdb::query { "${name}_security":
-    cmd     => 'PUT',
-    host    => $host,
-    path    => "${name}/_security",
-    data    => "{ \"admins\": ${admins}, \"readers\": ${readers} }",
+  couchdb::document { "${name}_security":
+    db   => $name,
+    id   => '_security',
+    host => $host,
+    data => "{ \"admins\": ${admins}, \"readers\": ${readers} }",
     require => Couchdb::Query["create_db_${name}"]
   }
 }
