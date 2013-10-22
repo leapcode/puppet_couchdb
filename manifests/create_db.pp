@@ -1,7 +1,7 @@
 define couchdb::create_db (
   $host='127.0.0.1:5984',
   $admins="{\"names\": [], \"roles\": [] }",
-  $readers="{\"names\": [], \"roles\": [] }" )
+  $members="{\"names\": [], \"roles\": [] }" )
 {
 
   couchdb::query { "create_db_${name}":
@@ -15,7 +15,7 @@ define couchdb::create_db (
     db   => $name,
     id   => '_security',
     host => $host,
-    data => "{ \"admins\": ${admins}, \"readers\": ${readers} }",
+    data => "{ \"admins\": ${admins}, \"members\": ${members} }",
     require => Couchdb::Query["create_db_${name}"]
   }
 }
