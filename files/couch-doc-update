@@ -1,4 +1,5 @@
 #!/usr/bin/ruby
+require 'syslog'
 
 #
 # This script will update the values of a particular couchdb document. The benefit of this little script over
@@ -37,7 +38,10 @@ def main
   exit 0 if result['ok']
   raise StandardError.new(result.inspect)
 rescue StandardError => exc
-  puts "ERROR: " + exc.to_s
+  $stderr.puts "ERROR: " + exc.to_s
+  Syslog.open do |logger|
+    logger.log(Syslog::LOG_CRIT, exc.to_s)
+  end
   exit 1
 end
 
@@ -101,8 +105,8 @@ def connection_string(database, host)
   protocol  = "http"
   #hostname  = "127.0.0.1"
   port      = "5984"
-  username  = "admin"
-  password  = ""
+  # username  = "admin"
+  # password  = ""
 
   netrc = File.read('/etc/couchdb/couchdb.netrc')
   netrc.scan(/\w+ [\w\.]+/).each do |key_value|
@@ -116,7 +120,8 @@ def connection_string(database, host)
 
   host ||= '127.0.0.1:5984'
 
-  "%s://%s:%s@%s/%s" % [protocol, username, password, host, database]
+  puts "%s://%s/%s" % [protocol, host, database]
+  "%s://%s/%s" % [protocol, host, database]
 end
 
 def usage(s)
