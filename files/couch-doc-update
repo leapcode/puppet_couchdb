@@ -38,11 +38,17 @@ def main
   exit 0 if result['ok']
   raise StandardError.new(result.inspect)
 rescue StandardError => exc
-  $stderr.puts "ERROR: " + exc.to_s
-  Syslog.open do |logger|
-    logger.log(Syslog::LOG_CRIT, exc.to_s)
-  end
+  db_without_password = db.to_s.sub(/:[^\/]*@/, ':PASSWORD_HIDDEN@')
+  log "ERROR: " + exc.to_s
+  log "       failed writing to #{db_without_password}/#{id}"
   exit 1
+end
+
+def log(message)
+  $stderr.puts message
+  Syslog.open do |logger|
+    logger.log(Syslog::LOG_CRIT, message)
+  end
 end
 
 def process_options
