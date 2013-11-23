@@ -1,4 +1,5 @@
 #!/usr/bin/ruby
+require 'syslog'
 
 #
 # This script will update the values of a particular couchdb document. The benefit of this little script over
@@ -37,7 +38,10 @@ def main
   exit 0 if result['ok']
   raise StandardError.new(result.inspect)
 rescue StandardError => exc
-  puts "ERROR: " + exc.to_s
+  $stderr.puts "ERROR: " + exc.to_s
+  Syslog.open do |logger|
+    logger.log(Syslog::LOG_CRIT, exc.to_s)
+  end
   exit 1
 end
 
