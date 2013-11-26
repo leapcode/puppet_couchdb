@@ -15,7 +15,10 @@ require 'syslog'
 #
 # USAGE
 #
-#   couch-doc-update --host <host> --db <db> --id <doc_id> --data <json>
+#   couch-doc-update --host <host> --db <db> --id <doc_id> --data <json> [--file <file>]
+#
+#   the content of <file> will be merged with the data provided.
+#   If you only want the file content use --data '{}'
 #
 # EXAMPLE
 #
@@ -59,20 +62,29 @@ def process_options
   db_name    = nil
   doc_id     = nil
   new_data   = nil
+  filename   = nil
   loop do
     case ARGV[0]
       when '--host' then ARGV.shift; host     = ARGV.shift
       when '--db'   then ARGV.shift; db_name  = ARGV.shift
       when '--id'   then ARGV.shift; doc_id   = ARGV.shift
       when '--data' then ARGV.shift; new_data = ARGV.shift
+      when '--file' then ARGV.shift; filename = ARGV.shift
       when /^-/     then usage("Unknown option: #{ARGV[0].inspect}")
       else break
     end
   end
   usage("Missing required option") unless db_name && doc_id && new_data
   new_data = JSON.parse(new_data)
+  new_data.merge!(read_file(filename)) if filename
   db  = CouchRest.database(connection_string(db_name, host))
   return db, doc_id, new_data
+end
+
+def read_file(filename)
+  data = JSON.parse( IO.read(filename) )
+  # strip off _id and _rev to avoid conflicts
+  data.reject! {|k,v| k.start_with? '_'}
 end
 
   #
@@ -131,7 +143,7 @@ end
 
 def usage(s)
   $stderr.puts(s)
-  $stderr.puts("Usage: #{File.basename($0)} --host <host> --db <db> --id <doc_id> --data <json>")
+  $stderr.puts("Usage: #{File.basename($0)} --host <host> --db <db> --id <doc_id> --data <json> [--file <file>]")
   exit(2)
 end
 
