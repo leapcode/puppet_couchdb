@@ -33,7 +33,6 @@ require 'syslog'
 
 begin; require 'rubygems'; rescue LoadError; end # optionally load rubygems
 require 'couchrest'
-require 'json'
 
 def main
   db, id, data = process_options
@@ -75,14 +74,14 @@ def process_options
     end
   end
   usage("Missing required option") unless db_name && doc_id && new_data
-  new_data = JSON.parse(new_data)
+  new_data = MultiJson.load(new_data)
   new_data.merge!(read_file(filename)) if filename
   db  = CouchRest.database(connection_string(db_name, host))
   return db, doc_id, new_data
 end
 
 def read_file(filename)
-  data = JSON.parse( IO.read(filename) )
+  data = MultiJson.load( IO.read(filename) )
   # strip off _id and _rev to avoid conflicts
   data.reject! {|k,v| k.start_with? '_'}
 end
