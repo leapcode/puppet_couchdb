@@ -83,7 +83,7 @@ end
 def read_file(filename)
   data = MultiJson.load( IO.read(filename) )
   # strip off _id and _rev to avoid conflicts
-  data.reject! {|k,v| k.start_with? '_'}
+  data.delete_if {|k,v| k.start_with? '_'}
 end
 
   #
