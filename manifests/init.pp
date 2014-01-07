@@ -1,4 +1,10 @@
-class couchdb ( $admin_pw = '', $admin_salt = '', $bigcouch = false,  $bigcouch_cookie = '', $ednp_port = '9001' )
+class couchdb (
+  $admin_pw = '',
+  $admin_salt = '',
+  $bigcouch = false,
+  $bigcouch_cookie = '',
+  $ednp_port = '9001',
+  $chttpd_bind_address = '0.0.0.0' )
 {
 
   if $admin_pw == '' {
