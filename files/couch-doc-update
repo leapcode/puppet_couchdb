@@ -90,6 +90,7 @@ end
   # update document
   #
 def set_document(db, id, data)
+  attempt ||= 1
   doc = get_document(db, id)
   if doc
     doc.id ||= id
@@ -97,6 +98,11 @@ def set_document(db, id, data)
   else
     create_document(db, id, data)
   end
+rescue RestClient::Conflict
+  # retry once, reraise if that does not work
+  raise if attempt > 1
+  attempt += 1
+  retry
 end
 
 def get_document(db, doc_id)
