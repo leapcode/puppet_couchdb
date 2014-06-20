@@ -62,6 +62,7 @@ def process_options
   doc_id     = nil
   new_data   = nil
   filename   = nil
+  netrc_file = nil
   loop do
     case ARGV[0]
       when '--host' then ARGV.shift; host     = ARGV.shift
@@ -69,6 +70,7 @@ def process_options
       when '--id'   then ARGV.shift; doc_id   = ARGV.shift
       when '--data' then ARGV.shift; new_data = ARGV.shift
       when '--file' then ARGV.shift; filename = ARGV.shift
+      when '--netrc-file' then ARGV.shift; netrc_file = ARGV.shift
       when /^-/     then usage("Unknown option: #{ARGV[0].inspect}")
       else break
     end
@@ -76,7 +78,7 @@ def process_options
   usage("Missing required option") unless db_name && doc_id && new_data
   new_data = MultiJson.load(new_data)
   new_data.merge!(read_file(filename)) if filename
-  db  = CouchRest.database(connection_string(db_name, host))
+  db  = CouchRest.database(connection_string(db_name, host, netrc_file))
   return db, doc_id, new_data
 end
 
@@ -124,14 +126,14 @@ def create_document(db, doc_id, data)
   db.save_doc(data)
 end
 
-def connection_string(database, host)
+def connection_string(database, host, netrc_file = nil)
   protocol  = "http"
   #hostname  = "127.0.0.1"
   port      = "5984"
   username  = "admin"
   password  = ""
 
-  netrc = File.read('/etc/couchdb/couchdb.netrc')
+  netrc = File.read(netrc_file || '/etc/couchdb/couchdb.netrc')
   netrc.scan(/\w+ [\w\.]+/).each do |key_value|
     key, value = key_value.split ' '
     case key
@@ -148,7 +150,7 @@ end
 
 def usage(s)
   $stderr.puts(s)
-  $stderr.puts("Usage: #{File.basename($0)} --host <host> --db <db> --id <doc_id> --data <json> [--file <file>]")
+  $stderr.puts("Usage: #{File.basename($0)} --host <host> --db <db> --id <doc_id> --data <json> [--file <file>] [--netrc-file <netrc-file>]")
   exit(2)
 end
 
