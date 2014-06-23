@@ -116,7 +116,7 @@ def get_document(db, doc_id)
 end
 
 def update_document(db, doc, data)
-  doc.reject! {|k,v| !k.start_with? '_'}
+  doc.reject! {|k,v| !["_id", "_rev"].include? k}
   doc.merge! data
   db.save_doc(doc)
 end
