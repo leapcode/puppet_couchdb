@@ -30,4 +30,10 @@ define couchdb::add_user ( $roles, $pw, $salt = '' ) {
     id     => "org.couchdb.user:${name}",
     data   => $data
   }
+
+  couchdb::query::setup { $name:
+    user  => $name,
+    pw    => $pw,
+  }
+
 }

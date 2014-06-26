@@ -10,6 +10,7 @@ define couchdb::document(
   $id,
   $host   = '127.0.0.1:5984',
   $data   = '{}',
+  $netrc  = '/etc/couchdb/couchdb.netrc',
   $ensure = 'content') {
 
   $url = "${host}/${db}/${id}"
@@ -17,7 +18,7 @@ define couchdb::document(
   case $ensure {
     default: { err ( "unknown ensure value '${ensure}'" ) }
     content: {
-      exec { "couch-doc-update --host ${host} --db ${db} --id ${id} --data \'${data}\'":
+      exec { "couch-doc-update --netrc-file ${netrc} --host ${host} --db ${db} --id ${id} --data \'${data}\'":
         require => Exec['wait_for_couchdb'],
         unless  => "couch-doc-diff $url '$data'"
       }
@@ -28,7 +29,7 @@ define couchdb::document(
         cmd    => 'PUT',
         host   => $host,
         path   => "${db}/${id}",
-        unless => "/usr/bin/curl -s -f --netrc-file /etc/couchdb/couchdb.netrc ${url}"
+        unless => "/usr/bin/curl -s -f --netrc-file ${netrc} ${url}"
       }
     }
 
@@ -37,7 +38,7 @@ define couchdb::document(
         cmd    => 'DELETE',
         host   => $host,
         path   => "${db}/${id}",
-        unless => "/usr/bin/curl -s -f --netrc-file /etc/couchdb/couchdb.netrc ${url}"
+        unless => "/usr/bin/curl -s -f --netrc-file ${netrc} ${url}"
       }
     }
   }
