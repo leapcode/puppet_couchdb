@@ -6,16 +6,16 @@ define couchdb::mirror_db (
   $role='replication'
   )
 {
-  $source = "$from/$name"
+  $source = "${from}/${name}"
   if $to == '' { $target = $name }
-  else { $target = "$to/$name" }
+  else { $target = "${to}/${name}" }
 
   couchdb::document { "${name}_replication":
-    db    => "_replicator",
-    id    => "${name}_replication",
-    netrc => "/etc/couchdb/couchdb-${user}.netrc",
-    host  => $host,
-    data  => "{ \"source\": \"${source}\", \"target\": \"${target}\", \"continuous\": true, \"user_ctx\": { \"name\": \"${user}\", \"roles\": [\"${role}\"] } }",
+    db      => "_replicator",
+    id      => "${name}_replication",
+    netrc   => "/etc/couchdb/couchdb-${user}.netrc",
+    host    => $host,
+    data    => "{ \"source\": \"${source}\", \"target\": \"${target}\", \"continuous\": true, \"user_ctx\": { \"name\": \"${user}\", \"roles\": [\"${role}\"] } }",
     require => Couchdb::Query["create_db_${name}"]
   }
 }
