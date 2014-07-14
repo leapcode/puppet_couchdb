@@ -15,7 +15,7 @@ define couchdb::mirror_db (
     id      => "${name}_replication",
     netrc   => "/etc/couchdb/couchdb-${user}.netrc",
     host    => $host,
-    data    => "{ \"source\": \"${source}\", \"target\": \"${target}\", \"continuous\": true, \"user_ctx\": { \"name\": \"${user}\", \"roles\": [\"${role}\"] } }",
+    data    => "{ \"source\": \"${source}\", \"target\": \"${target}\", \"continuous\": true, \"user_ctx\": { \"name\": \"${user}\", \"roles\": [\"${role}\"] }, \"owner\": \"${user}\" }",
     require => Couchdb::Query["create_db_${name}"]
   }
 }
