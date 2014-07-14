@@ -29,6 +29,7 @@ define couchdb::document(
         cmd    => 'PUT',
         host   => $host,
         path   => "${db}/${id}",
+        require => Exec['wait_for_couchdb'],
         unless => "/usr/bin/curl -s -f --netrc-file ${netrc} ${url}"
       }
     }
@@ -38,6 +39,7 @@ define couchdb::document(
         cmd    => 'DELETE',
         host   => $host,
         path   => "${db}/${id}",
+        require => Exec['wait_for_couchdb'],
         unless => "/usr/bin/curl -s -f --netrc-file ${netrc} ${url}"
       }
     }

@@ -34,6 +34,8 @@ class couchdb::base {
   File['/usr/local/bin/couch-doc-update'] ->  Couchdb::Update <| |>
   File['/usr/local/bin/couch-doc-diff'] ->  Couchdb::Update <| |>
 
+  Couchdb::Update <| |> -> Couchdb::Document <| |>
+
   file {
     '/usr/local/bin/couch-doc-update':
       source  => 'puppet:///modules/couchdb/couch-doc-update',
