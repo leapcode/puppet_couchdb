@@ -31,6 +31,14 @@ class couchdb::base {
     provider => 'gem'
   }
 
+  # required for new passwords hashing in admin.ini
+  package { 'pbkdf2':
+    ensure   => installed,
+    provider => 'gem'
+  }
+
+  Package['pbkdf2'] -> File['/etc/couchdb/local.d/admin.ini']
+
   File['/usr/local/bin/couch-doc-update'] ->  Couchdb::Update <| |>
   File['/usr/local/bin/couch-doc-diff'] ->  Couchdb::Update <| |>
 
@@ -78,11 +86,12 @@ class couchdb::base {
     $salt        = $::couchdb::admin_salt
     $pw_and_salt = [ $::couchdb::admin_pw, $salt ]
     $sha1        = str_and_salt2sha1($pw_and_salt)
+    $pbkdf2      = str_and_salt2pbkdf2($pw_and_salt)
   }
 
   file { '/etc/couchdb/local.d/admin.ini':
     content => "[admins]
-admin = -hashed-${sha1},${salt}
+admin = -pbkdf2-${pbkdf2[0]},${pbkdf2[1]},${pbkdf2[2]}
 ",
     mode    => '0600',
     owner   => $couchdb_user,
