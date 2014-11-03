@@ -116,14 +116,30 @@ def get_document(db, doc_id)
 end
 
 def update_document(db, doc, data)
+  attempt ||= 1
   doc.reject! {|k,v| !["_id", "_rev"].include? k}
   doc.merge! data
   db.save_doc(doc)
+rescue RestClient::Exception => e
+  if e.response.code == 500
+    raise if attempt > 5
+    attempt += 1
+    sleep 10
+    retry
+  end
 end
 
 def create_document(db, doc_id, data)
+  attempt ||= 1
   data["_id"] = doc_id
   db.save_doc(data)
+rescue RestClient::Exception => e
+  if e.response.code == 500
+    raise if attempt > 5
+    attempt += 1
+    sleep 10
+    retry
+  end
 end
 
 def connection_string(database, host, netrc_file = nil)
