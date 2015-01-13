@@ -121,7 +121,8 @@ def update_document(db, doc, data)
   doc.merge! data
   db.save_doc(doc)
 rescue RestClient::Exception => e
-  if e.response.code == 500
+  case e.response.code
+    when 500, 422 then
     raise if attempt > 5
     attempt += 1
     sleep 10
@@ -134,7 +135,8 @@ def create_document(db, doc_id, data)
   data["_id"] = doc_id
   db.save_doc(data)
 rescue RestClient::Exception => e
-  if e.response.code == 500
+  case e.response.code
+    when 500, 422 then
     raise if attempt > 5
     attempt += 1
     sleep 10
