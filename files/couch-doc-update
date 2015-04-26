@@ -41,14 +41,16 @@ def main
   raise StandardError.new(result.inspect)
 rescue StandardError => exc
   db_without_password = db.to_s.sub(/:[^\/]*@/, ':PASSWORD_HIDDEN@')
+  indent = "       "
   log "ERROR: " + exc.to_s
-  log "       failed writing to #{db_without_password}/#{id}"
+  log indent + $@[0..4].join("\n#{indent}")
+  log indent + "Failed writing to #{db_without_password}/#{id}"
   exit 1
 end
 
 def log(message)
   $stderr.puts message
-  Syslog.open do |logger|
+  Syslog.open('couch-doc-update') do |logger|
     logger.log(Syslog::LOG_CRIT, message)
   end
 end
@@ -121,7 +123,9 @@ def update_document(db, doc, data)
   doc.merge! data
   db.save_doc(doc)
 rescue RestClient::ExceptionWithResponse => e
-  if [500, 422].include?(e.response.code)
+  if e.response.nil?
+    raise e
+  elsif [500, 422].include?(e.response.code)
     raise if attempt > 5
     attempt += 1
     sleep 10
@@ -134,7 +138,9 @@ def create_document(db, doc_id, data)
   data["_id"] = doc_id
   db.save_doc(data)
 rescue RestClient::ExceptionWithResponse => e
-  if [500, 422].include?(e.response.code)
+  if e.response.nil?
+    raise e
+  elsif [500, 422].include?(e.response.code)
     raise if attempt > 5
     attempt += 1
     sleep 10
