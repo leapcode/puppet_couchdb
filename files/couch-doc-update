@@ -117,34 +117,36 @@ def get_document(db, doc_id)
   end
 end
 
+# if the response status code is one of these
+# then retry instead of failing.
+RETRY_CODES = [500, 422].freeze
+
 def update_document(db, doc, data)
-  attempt ||= 1
+  attempts ||= 1
   doc.reject! {|k,v| !["_id", "_rev"].include? k}
   doc.merge! data
   db.save_doc(doc)
 rescue RestClient::ExceptionWithResponse => e
-  if e.response.nil?
-    raise e
-  elsif [500, 422].include?(e.response.code)
-    raise if attempt > 5
-    attempt += 1
+  if attempts < 6 && !e.response.nil? && RETRY_CODES.include?(e.response.code)
+    attempts += 1
     sleep 10
     retry
+  else
+    raise e
   end
 end
 
 def create_document(db, doc_id, data)
-  attempt ||= 1
+  attempts ||= 1
   data["_id"] = doc_id
   db.save_doc(data)
 rescue RestClient::ExceptionWithResponse => e
-  if e.response.nil?
-    raise e
-  elsif [500, 422].include?(e.response.code)
-    raise if attempt > 5
-    attempt += 1
+  if attempts < 6 && !e.response.nil? && RETRY_CODES.include?(e.response.code)
+    attempts += 1
     sleep 10
     retry
+  else
+    raise e
   end
 end
 
