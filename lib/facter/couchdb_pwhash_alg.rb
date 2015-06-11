@@ -19,7 +19,7 @@ def couchdb_pwhash_alg
   # details
 
   couchdb_version = Facter.value(:couchdb_version)
-  version = version_parts (couchdb_version)
+  version = version_parts(couchdb_version)
   major = version["major"].to_i
   alg = case major
     when 0 then alg = 'n/a'
