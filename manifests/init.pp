@@ -4,7 +4,8 @@ class couchdb (
   $bigcouch = false,
   $bigcouch_cookie = '',
   $ednp_port = '9001',
-  $chttpd_bind_address = '0.0.0.0' )
+  $chttpd_bind_address = '0.0.0.0',
+  $pwhash_alg = 'sha1' )
 {
 
   if $admin_pw == '' {

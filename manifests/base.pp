@@ -1,3 +1,4 @@
+# configure couchdb
 class couchdb::base {
 
   if $::couchdb::bigcouch == true {
@@ -66,24 +67,26 @@ class couchdb::base {
       require => Package['couchdb'];
   }
 
-  if $::couchdb::admin_salt == '' {
-    # unhashed, plaintext pw, no salt. For couchdb >= 1.2
-    $sha1_and_salt = str2sha1_and_salt($::couchdb::admin_pw)
-    $sha1          = $sha1_and_salt[0]
-    $salt          = $sha1_and_salt[1]
-  } else {
-    # prehashed pw with salt, for couchdb < 1.2
-    # salt and encrypt pw
-    # str_and_salt2sha1 is a function from leap's stdlib module
-    $salt        = $::couchdb::admin_salt
-    $pw_and_salt = [ $::couchdb::admin_pw, $salt ]
-    $sha1        = str_and_salt2sha1($pw_and_salt)
+  $alg  = $::couchdb::pwhash_alg
+  $salt = $::couchdb::admin_salt
+  notice ($salt)
+  case $alg {
+    'sha1': {
+      # str_and_salt2sha1 is a function from leap's stdlib module
+      $pw_and_salt = [ $::couchdb::admin_pw, $salt ]
+      $sha1        = str_and_salt2sha1($pw_and_salt)
+      $admin_hash  = "-hashed-${sha1},${salt}"
+    }
+    'pbkdf2': {
+      $pbkdf2      = pbkdf2($::couchdb::admin_pw, $::couchdb::admin_salt, 10)
+      $sha1        = $pbkdf2['sha1']
+      $admin_hash  = "-pbkdf2-${sha1},${salt},10"
+    }
+    default:  { fail ("Unknown fact couchdb_pwhash_alg ${::couchdb_pwhash_alg} - Exiting.") }
   }
 
   file { '/etc/couchdb/local.d/admin.ini':
-    content => "[admins]
-admin = -hashed-${sha1},${salt}
-",
+    content => "[admins]\nadmin = ${admin_hash}\n",
     mode    => '0600',
     owner   => $couchdb_user,
     group   => $couchdb_user,
@@ -103,6 +106,4 @@ admin = -hashed-${sha1},${salt}
                         '/etc/couchdb/local.ini'],
     refreshonly => true
   }
-
-
 }
