@@ -69,7 +69,6 @@ class couchdb::base {
 
   $alg  = $::couchdb::pwhash_alg
   $salt = $::couchdb::admin_salt
-  notice ($salt)
   case $alg {
     'sha1': {
       # str_and_salt2sha1 is a function from leap's stdlib module
