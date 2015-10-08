@@ -2,7 +2,7 @@
 require 'syslog'
 
 #
-# This script will update the values of a particular couchdb document. The benefit of this little script over
+# This script will delete or update the values of a particular couchdb document. The benefit of this little script over
 # using a simple curl command for updating a document is this:
 #
 #   * exit non-zero status if document was not updated.
@@ -15,7 +15,9 @@ require 'syslog'
 #
 # USAGE
 #
-#   couch-doc-update --host <host> --db <db> --id <doc_id> --data <json> [--file <file>]
+#   see the ouput of
+#
+#     couch-doc-update
 #
 #   the content of <file> will be merged with the data provided.
 #   If you only want the file content use --data '{}'
@@ -28,7 +30,10 @@ require 'syslog'
 #   update a user:
 #     couch-doc-update --db _users --id org.couchdb.user:ca_daemon --data '{"password":"sssshhh"}'
 #
-# To update the _users DB on bigcouch, you must connect to port 5986 instead of the default couchdb port 5984
+#   To update the _users DB on bigcouch, you must connect to port 5986 instead of the default couchdb port 5984
+#
+#   delete a doc:
+#     couch-doc-update --delete --db invite_codes --id dfaf0ee65670c16d5a9161dc86f3bff8
 #
 
 begin; require 'rubygems'; rescue LoadError; end # optionally load rubygems
@@ -207,6 +212,7 @@ end
 def usage(s)
   $stderr.puts(s)
   $stderr.puts("Usage: #{File.basename($0)} --host <host> --db <db> --id <doc_id> --data <json> [--file <file>] [--netrc-file <netrc-file>]")
+  $stderr.puts("       #{File.basename($0)} --host <host> --db <db> --id <doc_id> --delete [--netrc-file <netrc-file>]")
   exit(2)
 end
 
