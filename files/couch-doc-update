@@ -35,8 +35,14 @@ begin; require 'rubygems'; rescue LoadError; end # optionally load rubygems
 require 'couchrest'
 
 def main
-  db, id, data = process_options
-  result = set_document(db, id, data)
+  db, id, data, delete = process_options
+
+  result = if delete
+    delete_document(db, id)
+  else
+    set_document(db, id, data)
+  end
+
   exit 0 if result['ok']
   raise StandardError.new(result.inspect)
 rescue StandardError => exc
@@ -65,6 +71,7 @@ def process_options
   new_data   = nil
   filename   = nil
   netrc_file = nil
+  delete     = false
   loop do
     case ARGV[0]
       when '--host' then ARGV.shift; host     = ARGV.shift
@@ -73,15 +80,19 @@ def process_options
       when '--data' then ARGV.shift; new_data = ARGV.shift
       when '--file' then ARGV.shift; filename = ARGV.shift
       when '--netrc-file' then ARGV.shift; netrc_file = ARGV.shift
+      when '--delete' then ARGV.shift; delete = true
       when /^-/     then usage("Unknown option: #{ARGV[0].inspect}")
       else break
     end
   end
-  usage("Missing required option") unless db_name && doc_id && new_data
-  new_data = MultiJson.load(new_data)
-  new_data.merge!(read_file(filename)) if filename
+  usage("Missing required option") unless db_name && doc_id && (new_data || delete)
+
+  unless delete
+    new_data = MultiJson.load(new_data)
+    new_data.merge!(read_file(filename)) if filename
+  end
   db  = CouchRest.database(connection_string(db_name, host, netrc_file))
-  return db, doc_id, new_data
+  return db, doc_id, new_data, delete
 end
 
 def read_file(filename)
@@ -107,6 +118,27 @@ rescue RestClient::Conflict
   raise if attempt > 1
   attempt += 1
   retry
+end
+
+COUCH_RESPONSE_OK = { 'ok' => true }
+
+# Deletes document, if exists, with retry
+def delete_document(db, id)
+  attempts ||= 1
+  doc = get_document(db, id)
+  if doc
+    db.delete_doc(doc)
+  else
+    COUCH_RESPONSE_OK
+  end
+rescue RestClient::ExceptionWithResponse => e
+  if attempts < 6 && !e.response.nil? && RETRY_CODES.include?(e.response.code)
+    attempts += 1
+    sleep 10
+    retry
+  else
+    raise e
+  end
 end
 
 def get_document(db, doc_id)
