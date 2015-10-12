@@ -1,5 +1,5 @@
 class couchdb (
-  $admin_pw = '',
+  $admin_pw,
   $admin_salt = '',
   $bigcouch = false,
   $bigcouch_cookie = '',
@@ -7,10 +7,6 @@ class couchdb (
   $chttpd_bind_address = '0.0.0.0',
   $pwhash_alg = 'sha1' )
 {
-
-  if $admin_pw == '' {
-    err('Must set admin password by passing a value to the $admin_pw parameter')
-  }
 
   case $::operatingsystem {
     Debian: {
