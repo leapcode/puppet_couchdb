@@ -23,8 +23,7 @@ class couchdb::bigcouch inherits couchdb::base {
   # for signed 0.4.2 packages
 
   Package ['couchdb'] {
-    name    => 'bigcouch',
-    require => Exec[refresh_apt]
+    name    => 'bigcouch'
   }
 
   file { '/opt/bigcouch/etc/vm.args':
