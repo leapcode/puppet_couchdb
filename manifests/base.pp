@@ -25,10 +25,17 @@ class couchdb::base {
     require => Service['couchdb']
   }
 
-  # required for couch-doc-update script
+
+  # couchrest gem is required for couch-doc-update script,
+  # and it needs the ruby-dev package installed to build
+  class {'::ruby':
+    install_dev => true
+  }
+
   package { 'couchrest':
     ensure   => installed,
-    provider => 'gem'
+    provider => 'gem',
+    require  => Package['ruby-dev']
   }
 
   File['/usr/local/bin/couch-doc-update'] ->  Couchdb::Update <| |>
