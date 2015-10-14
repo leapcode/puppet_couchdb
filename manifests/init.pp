@@ -8,6 +8,9 @@ class couchdb (
   $pwhash_alg = 'sha1' )
 {
 
+  # stdlib is needed i.e. for ensure_packages()
+  include ::stdlib
+
   case $::operatingsystem {
     Debian: {
       case $::lsbdistcodename {
@@ -23,7 +26,5 @@ class couchdb (
     RedHat: { include couchdb::redhat }
   }
 
-  package { 'curl':
-    ensure => installed,
-  }
+  ensure_packages('curl')
 }

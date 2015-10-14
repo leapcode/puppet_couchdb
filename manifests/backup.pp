@@ -1,3 +1,4 @@
+# configure backup using couchdb-backup.py
 class couchdb::backup {
 
   include couchdb::params
@@ -32,10 +33,9 @@ class couchdb::backup {
   case $::operatingsystem {
     /Debian|Ubunu/: {
       # note: python-couchdb >= 0.8 required, which is found in debian wheezy.
-      package { ['python-couchdb', 'python-simplejson']:
-        ensure => present,
-        before => File['/usr/local/sbin/couchdb-backup.py'],
-      }
+      ensure_packages (['python-couchdb', 'python-simplejson'], {
+        before => File['/usr/local/sbin/couchdb-backup.py']
+      })
     }
     /RedHat|Centos/: {
       exec {'install python-couchdb using easy_install':

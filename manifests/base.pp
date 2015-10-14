@@ -8,9 +8,7 @@ class couchdb::base {
     $couchdb_user = 'couchdb'
   }
 
-  package { 'couchdb':
-    ensure  => present
-  }
+  ensure_packages ('couchdb')
 
   service { 'couchdb':
     ensure    => running,
@@ -28,15 +26,13 @@ class couchdb::base {
 
   # couchrest gem is required for couch-doc-update script,
   # and it needs the ruby-dev package installed to build
-  class {'::ruby':
-    install_dev => true
-  }
+  #include ruby::devel
 
-  package { 'couchrest':
-    ensure   => installed,
+  ensure_packages('ruby-dev')
+  ensure_packages('couchrest', {
     provider => 'gem',
     require  => Package['ruby-dev']
-  }
+  })
 
   File['/usr/local/bin/couch-doc-update'] ->  Couchdb::Update <| |>
   File['/usr/local/bin/couch-doc-diff'] ->  Couchdb::Update <| |>

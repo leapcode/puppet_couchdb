@@ -1,8 +1,7 @@
+# configures cert for ssl access
 class couchdb::ssl::generate_cert {
 
-  package { ['openssl']:
-    ensure => 'installed',
-  }
+  ensure_packages('openssl')
 
   file { $couchdb::cert_path:
     ensure => 'directory',

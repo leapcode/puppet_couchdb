@@ -1,8 +1,7 @@
+# installs initscript and dependent packages on debian
 class couchdb::debian inherits couchdb::base {
 
-  package { 'libjs-jquery':
-    ensure => present,
-  }
+  ensure_packages('libjs-jquery')
 
   file { '/etc/init.d/couchdb':
     source  => [
