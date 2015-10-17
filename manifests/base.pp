@@ -8,7 +8,11 @@ class couchdb::base {
     $couchdb_user = 'couchdb'
   }
 
-  ensure_packages ('couchdb')
+  # we use package{} here because bigcouch.pp overwrites it and
+  # this won't work with ensure_packages()
+  package {'couchdb':
+    ensure => installed
+  }
 
   service { 'couchdb':
     ensure    => running,
