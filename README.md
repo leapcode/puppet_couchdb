@@ -10,6 +10,14 @@ For more information about couchdb see http://couchdb.apache.org/
 
 - ruby module from the shared-modules group
 
+# Couchdb debian packages
+
+## Jessie
+
+There are no couchdb packages for jessie, so the only way is to
+to configure apt to install couchdb from unstable by adding a
+sources list file to `/etc/apt/sources.list.d`.
+
 ## Example usage
 
 This will setup couchdb:

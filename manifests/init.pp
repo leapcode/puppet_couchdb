@@ -1,3 +1,4 @@
+# initial couchdb class
 class couchdb (
   $admin_pw,
   $admin_salt = '',
@@ -14,7 +15,7 @@ class couchdb (
   case $::operatingsystem {
     Debian: {
       case $::lsbdistcodename {
-        /lenny|squeeze|wheezy/: {
+        /lenny|squeeze|wheezy|jessie/: {
           include couchdb::debian
           if $bigcouch == true {
             include couchdb::bigcouch::debian
