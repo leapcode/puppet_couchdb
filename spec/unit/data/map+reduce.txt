@@ -1,3 +1,0 @@
-{"rows":[
-{"key":1,"value":["foo","bar","baz"]}
-]}
