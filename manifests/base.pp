@@ -32,11 +32,13 @@ class couchdb::base {
   # and it needs the ruby-dev package installed to build
   #include ruby::devel
 
-  case $::operatingsystemmajrelease {
-    '7':    { $couchrest_version = '1.2'}
-    default:{ $couchrest_version = 'latest'}
+  if versioncmp($::operatingsystemrelease, '8') < 0 {
+    $couchrest_version = '1.2'
   }
-
+  else {
+    $couchrest_version = 'latest'
+  }
+  
   ensure_packages('ruby-dev')
   ensure_packages('couchrest', {
     provider => 'gem',
