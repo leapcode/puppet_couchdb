@@ -5,7 +5,7 @@ describe 'couchdb' do
     let(:params) { {:admin_pw => 'foo'} }
     let(:facts) do
       {
-      :operatingsystemmajrelease => '7',
+      :operatingsystemrelease => '7',
       :operatingsystem           => 'Debian',
       :lsbdistcodename           => 'wheezy',
       }
@@ -20,7 +20,7 @@ describe 'couchdb' do
     let(:params) { {:admin_pw => 'foo'} }
     let(:facts) do
       {
-      :operatingsystemmajrelease => '8',
+      :operatingsystemrelease => '8',
       :operatingsystem           => 'Debian',
       :lsbdistcodename           => 'jessie',
       }
