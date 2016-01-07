@@ -30,15 +30,17 @@ class couchdb::base {
 
   # couchrest gem is required for couch-doc-update script,
   # and it needs the ruby-dev package installed to build
-  #include ruby::devel
 
   if versioncmp($::operatingsystemrelease, '8') < 0 {
     $couchrest_version = '1.2'
   }
   else {
-    $couchrest_version = 'latest'
+    # couchrest v1.2.1 doesn't build with default debian jessie rake version
+    # shipped as debian package (10.3.2)
+    # see https://leap.se/code/issues/7754
+    $couchrest_version = '1.2.0'
   }
-  
+
   ensure_packages('ruby-dev')
   ensure_packages('couchrest', {
     provider => 'gem',
