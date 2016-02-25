@@ -6,7 +6,7 @@ class couchdb (
   $bigcouch_cookie = '',
   $ednp_port = '9001',
   $chttpd_bind_address = '0.0.0.0',
-  $pwhash_alg = 'sha1' )
+  $pwhash_alg = 'pbkdf2' )
 {
 
   # stdlib is needed i.e. for ensure_packages()
