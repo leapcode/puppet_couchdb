@@ -101,7 +101,7 @@ class couchdb::base {
   }
 
   file { '/etc/couchdb/local.d/admin.ini':
-    content => "[admins]\nadmin = ${admin_hash}\n",
+    content => template('couchdb/admin.ini.erb'),
     mode    => '0600',
     owner   => $couchdb_user,
     group   => $couchdb_user,
