@@ -1,6 +1,6 @@
 class couchdb::bigcouch::debian inherits couchdb::debian {
 
-  File ['/etc/init.d/couchdb'] {
+  File['/etc/init.d/couchdb'] {
     ensure => absent
   }
 

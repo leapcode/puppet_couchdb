@@ -22,7 +22,7 @@ class couchdb::bigcouch inherits couchdb::base {
   # or site_apt::leap_repo from the leap_platfrom repository
   # for signed 0.4.2 packages
 
-  Package ['couchdb'] {
+  Package['couchdb'] {
     name    => 'bigcouch'
   }
 
@@ -44,7 +44,7 @@ class couchdb::bigcouch inherits couchdb::base {
     notify  => Service[couchdb]
   }
 
-  Service ['couchdb'] {
+  Service['couchdb'] {
     name     => 'bigcouch'
   }
 

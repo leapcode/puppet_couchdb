@@ -106,7 +106,7 @@ class couchdb::base {
     owner   => $couchdb_user,
     group   => $couchdb_user,
     notify  => Service[couchdb],
-    require => File ['/etc/couchdb/local.d'];
+    require => File['/etc/couchdb/local.d'];
   }
 
   case $::couchdb::bigcouch {
