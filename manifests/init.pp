@@ -13,9 +13,9 @@ class couchdb (
   include ::stdlib
 
   case $::operatingsystem {
-    Debian: {
+    'Debian': {
       case $::lsbdistcodename {
-        /lenny|squeeze|wheezy|jessie/: {
+        /wheezy|jessie|stretch/: {
           include couchdb::debian
           if $bigcouch == true {
             include couchdb::bigcouch::debian

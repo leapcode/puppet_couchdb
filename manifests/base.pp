@@ -31,7 +31,7 @@ class couchdb::base {
   # couchrest gem is required for couch-doc-update script,
   # and it needs the ruby-dev package installed to build
 
-  if versioncmp($::operatingsystemrelease, '8') < 0 {
+  if versioncmp($::operatingsystemmajrelease}", '8') < 0 {
     $couchrest_version = '1.2'
   }
   else {
